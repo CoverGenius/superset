@@ -48,6 +48,11 @@ export default function DndAdhocFilterOption({
 }: DndAdhocFilterOptionProps) {
   const { actualTimeRange, title } = useGetTimeRangeLabel(adhocFilter);
 
+  const isDefaultFilter =
+    adhocFilter.subject &&
+    typeof adhocFilter.subject === 'string' &&
+    adhocFilter.subject.startsWith('metricDefaultFilter_');
+
   return (
     <AdhocFilterPopoverTrigger
       key={index}
@@ -61,7 +66,11 @@ export default function DndAdhocFilterOption({
         key={index}
         index={index}
         label={actualTimeRange ?? adhocFilter.getDefaultLabel()}
-        tooltipTitle={title ?? adhocFilter.getTooltipTitle()}
+        tooltipTitle={
+          isDefaultFilter
+            ? adhocFilter.subject.replace('metricDefaultFilter_', '')
+            : title ?? adhocFilter.getTooltipTitle()
+        }
         clickClose={onClickClose}
         onShiftOptions={onShiftOptions}
         type={DndItemType.FilterOption}
