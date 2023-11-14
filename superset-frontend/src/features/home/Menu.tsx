@@ -294,6 +294,22 @@ export function Menu({
       </SubMenu>
     );
   };
+
+  const getIcon = (brand: any) => {
+    if (window.location.origin.includes('partners.brightwrite')) {
+      return (
+        <img
+          src="/static/assets/images/cg-logo.png"
+          style={{ paddingTop: '5px' }}
+          alt={brand.alt}
+        />
+      );
+    }
+    return <img src={brand.icon} alt={brand.alt} />;
+  };
+
+  const domainSpecificIcon = getIcon(brand);
+
   return (
     <StyledHeader className="top" id="main-menu" role="navigation">
       <Global styles={globalStyles(theme)} />
@@ -307,11 +323,11 @@ export function Menu({
           >
             {isFrontendRoute(window.location.pathname) ? (
               <GenericLink className="navbar-brand" to={brand.path}>
-                <img src={brand.icon} alt={brand.alt} />
+                {domainSpecificIcon}
               </GenericLink>
             ) : (
               <a className="navbar-brand" href={brand.path}>
-                <img src={brand.icon} alt={brand.alt} />
+                {domainSpecificIcon}
               </a>
             )}
           </Tooltip>
