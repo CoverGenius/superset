@@ -39,6 +39,8 @@ from flask import (
     send_file,
     session,
 )
+from flask import current_app
+
 from flask_appbuilder import BaseView, Model, ModelView
 from flask_appbuilder.actions import action
 from flask_appbuilder.forms import DynamicForm
@@ -297,6 +299,8 @@ class BaseSupersetView(BaseView):
         payload = {
             "user": bootstrap_user_data(g.user, include_perms=True),
             "common": common_bootstrap_payload(),
+            "publicKey": current_app.config["BW_PUBLIC_KEY"],
+            "appId": current_app.config["BW_APP_ID"],
             **(extra_bootstrap_data or {}),
         }
         return self.render_template(
@@ -538,7 +542,12 @@ def show_unexpected_exception(ex: Exception) -> FlaskResponse:
 def get_common_bootstrap_data() -> dict[str, Any]:
     def serialize_bootstrap_data() -> str:
         return json.dumps(
-            {"common": common_bootstrap_payload()},
+            {
+                "common": common_bootstrap_payload(), 
+                "user": bootstrap_user_data(g.user, include_perms=True),
+                "publicKey": current_app.config["BW_PUBLIC_KEY"],
+                "appId": current_app.config["BW_APP_ID"],
+            },
             default=utils.pessimistic_json_iso_dttm_ser,
         )
 
@@ -557,6 +566,8 @@ class SupersetModelView(ModelView):
         payload = {
             "user": bootstrap_user_data(g.user, include_perms=True),
             "common": common_bootstrap_payload(),
+            "publicKey": current_app.config["BW_PUBLIC_KEY"],
+            "appId": current_app.config["BW_APP_ID"],
         }
         return self.render_template(
             "superset/spa.html",
