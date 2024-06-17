@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+// @ts-nocheck
 import React, { Fragment, useState, useEffect } from 'react';
 import rison from 'rison';
 import { useSelector } from 'react-redux';
@@ -479,7 +480,14 @@ const RightMenu = ({
                 </Menu.Item>
               )}
               <Menu.Item key="logout">
-                <a href={navbarRight.user_logout_url}>{t('Logout')}</a>
+                <a
+                  href={navbarRight.user_logout_url}
+                  onClick={() => {
+                    window.bwtag('reset');
+                  }}
+                >
+                  {t('Logout')}
+                </a>
               </Menu.Item>
             </Menu.ItemGroup>,
           ]}
