@@ -383,6 +383,7 @@ class Database(
         nullpool: bool = True,
         source: utils.QuerySource | None = None,
         override_ssh_tunnel: SSHTunnel | None = None,
+        fetch_metadata: bool = False
     ) -> Engine:
         from superset.daos.database import (  # pylint: disable=import-outside-toplevel
             DatabaseDAO,
@@ -417,6 +418,7 @@ class Database(
                 nullpool=nullpool,
                 source=source,
                 sqlalchemy_uri=sqlalchemy_uri,
+                fetch_metadata=fetch_metadata
             )
 
     def _get_sqla_engine(
@@ -425,6 +427,7 @@ class Database(
         nullpool: bool = True,
         source: utils.QuerySource | None = None,
         sqlalchemy_uri: str | None = None,
+        fetch_metadata: bool = False
     ) -> Engine:
         sqlalchemy_url = make_url_safe(
             sqlalchemy_uri if sqlalchemy_uri else self.sqlalchemy_uri_decrypted
@@ -500,6 +503,7 @@ class Database(
                 effective_username,
                 security_manager,
                 source,
+                fetch_metadata
             )
         try:
             return create_engine(sqlalchemy_url, **params)
@@ -736,7 +740,8 @@ class Database(
         self, ssh_tunnel: SSHTunnel | None = None
     ) -> Inspector:
         with self.get_sqla_engine_with_context(
-            override_ssh_tunnel=ssh_tunnel
+            override_ssh_tunnel=ssh_tunnel,
+            fetch_metadata = True
         ) as engine:
             yield sqla.inspect(engine)
 
@@ -817,7 +822,7 @@ class Database(
     def get_table(self, table_name: str, schema: str | None = None) -> Table:
         extra = self.get_extra()
         meta = MetaData(**extra.get("metadata_params", {}))
-        with self.get_sqla_engine_with_context() as engine:
+        with self.get_sqla_engine_with_context(fetch_metadata=True) as engine:
             return Table(
                 table_name,
                 meta,
@@ -921,11 +926,11 @@ class Database(
         return self.perm  # type: ignore
 
     def has_table(self, table: Table) -> bool:
-        with self.get_sqla_engine_with_context() as engine:
+        with self.get_sqla_engine_with_context(fetch_metadata=True) as engine:
             return engine.has_table(table.table_name, table.schema or None)
 
     def has_table_by_name(self, table_name: str, schema: str | None = None) -> bool:
-        with self.get_sqla_engine_with_context() as engine:
+        with self.get_sqla_engine_with_context(fetch_metadata=True) as engine:
             return engine.has_table(table_name, schema)
 
     @classmethod
@@ -944,7 +949,7 @@ class Database(
         return view_name in view_names
 
     def has_view(self, view_name: str, schema: str | None = None) -> bool:
-        with self.get_sqla_engine_with_context(schema) as engine:
+        with self.get_sqla_engine_with_context(schema, fetch_metadata=True) as engine:
             return engine.run_callable(
                 self._has_view, engine.dialect, view_name, schema
             )
