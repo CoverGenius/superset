@@ -32,7 +32,7 @@ import {
 import ErrorBoundary from 'src/components/ErrorBoundary';
 import { ExploreActions } from 'src/explore/actions/exploreActions';
 import controlMap from './controls';
-import { useOverlappingOptions } from 'src/hooks/useOvelappingOptions';
+// import { useOverlappingOptions } from 'src/hooks/useOvelappingOptions';
 
 export type ControlProps = {
   // the actual action dispatcher (via bindActionCreators) has identical
@@ -76,10 +76,10 @@ export default function Control(props: ControlProps) {
     resetOnHide = true,
   } = props;
 
-  const { filterProps } = useOverlappingOptions({
-    props,
-    name,
-  });
+  // const { filterProps } = useOverlappingOptions({
+  //   props,
+  //   name,
+  // });
 
   const [hovered, setHovered] = useState(false);
   const wasVisible = usePrevious(isVisible);
@@ -119,7 +119,7 @@ export default function Control(props: ControlProps) {
 
   const updProps = {
     ...props,
-    ...filterProps,
+    // ...filterProps,
   };
 
   return (
