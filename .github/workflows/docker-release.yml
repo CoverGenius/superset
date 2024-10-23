@@ -1,8 +1,10 @@
 name: Docker
 
 on:
-  release:
-    types: [published]
+  push:
+    branches:
+      - "*"
+
 jobs:
   config:
     runs-on: "ubuntu-latest"
