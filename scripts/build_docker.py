@@ -83,7 +83,7 @@ def is_latest_release(release: str) -> bool:
 
 
 def make_docker_tag(l: list[str]) -> str:
-    return f"{REPO}:" + "-".join([o for o in l if o])
+    return f"lemonyeah/superset:" + "-".join([o for o in l if o])
 
 
 def get_docker_tags(
@@ -189,9 +189,6 @@ def get_docker_command(
     platform_arg = "--platform " + ",".join(build_platforms)
 
     cache_from_arg = f"--cache-from=type=registry,ref={cache_ref}"
-    cache_to_arg = (
-        f"--cache-to=type=registry,mode=max,ref={cache_ref}" if is_authenticated else ""
-    )
     build_arg = f"--build-arg PY_VER={py_ver}" if py_ver else ""
     actor = os.getenv("GITHUB_ACTOR")
 
@@ -201,7 +198,6 @@ def get_docker_command(
         {docker_args} \\
         {docker_tags} \\
         {cache_from_arg} \\
-        {cache_to_arg} \\
         {build_arg} \\
         {platform_arg} \\
         {target_argument} \\
